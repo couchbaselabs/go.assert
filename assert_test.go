@@ -42,15 +42,27 @@ func TestFaltyAssert(t *testing.T) {
     t.Errorf("assert equals error; called %d times", f.count)
   }
 
+  // line
+  if !strings.Contains(f.str, `39`) {
+    t.Errorf("assert equals error; got [%v]", f)
+  }
+
+  // file name
+  if !strings.Contains(f.str, `assert_test.go`) {
+    t.Errorf("assert equals error; got [%v]", f)
+  }
+
   // should contain the line that caused the error
   if !strings.Contains(f.str, `Equals(&f, Foo(), "bar")`) {
     t.Errorf("assert equals error; got [%v]", f)
   }
 
+  // expected
   if !strings.Contains(f.str, `expected: "bar"`) {
     t.Errorf("assert equals error; got [%v]", f)
   }
 
+  // got
   if !strings.Contains(f.str, `got: "foo"`) {
     t.Errorf("assert equals error; got [%v]", f)
   }
@@ -68,6 +80,8 @@ func TestTrue(t *testing.T) {
     True(&f, falsifier())
 
     Equals(t, f.count, 1)
+    Equals(t, strings.Contains(f.str, `80`), true)
+    Equals(t, strings.Contains(f.str, `assert_test.go`), true)
     Equals(t, strings.Contains(f.str, `True(&f, falsifier())`), true)
     Equals(t, strings.Contains(f.str, "\n"), false)
   }
@@ -91,6 +105,8 @@ func TestFalse(t *testing.T) {
     False(&f, truthifier())
 
     Equals(t, f.count, 1)
+    Equals(t, strings.Contains(f.str, `105`), true)
+    Equals(t, strings.Contains(f.str, `assert_test.go`), true)
     Equals(t, strings.Contains(f.str, `False(&f, truthifier())`), true)
     Equals(t, strings.Contains(f.str, "\n"), false)
   }
