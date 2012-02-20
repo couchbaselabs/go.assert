@@ -9,11 +9,22 @@ type TestDriver interface {
   Errorf(format string, args ...interface{})
 }
 
-func assertEquals(t TestDriver, got, expected interface{}) {
-  _, file, line, _ := runtime.Caller(1)
-  buf, _ := ioutil.ReadFile(file)
-  filename := path.Base(file)
-  code := strings.TrimSpace(strings.Split(string(buf), "\n")[line-1])
+func Equals(t TestDriver, got, expected interface{}) {
+  if got != expected {
+    _, file, line, _ := runtime.Caller(1)
+    buf, _ := ioutil.ReadFile(file)
+    filename := path.Base(file)
+    code := strings.TrimSpace(strings.Split(string(buf), "\n")[line-1])
+    t.Errorf("|||||| %v:%d ----- %s ----- expected: %#v ----- got: %#v", filename, line, code, expected, got)
+  }
+}
 
-  t.Errorf("|||||| %v:%d ----- %s ----- expected: %#v, got: %#v", filename, line, code, expected, got)
+func True(t TestDriver, got bool) {
+  if got != true {
+    _, file, line, _ := runtime.Caller(1)
+    buf, _ := ioutil.ReadFile(file)
+    filename := path.Base(file)
+    code := strings.TrimSpace(strings.Split(string(buf), "\n")[line-1])
+    t.Errorf("|||||| %v:%d ----- %s", filename, line, code)
+  }
 }
