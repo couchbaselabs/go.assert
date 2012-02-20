@@ -65,8 +65,6 @@ func TestTrue(t *testing.T) {
   {
     var f FakeTester
 
-    falsifier := func() bool { return false }
-
     True(&f, falsifier())
 
     Equals(t, f.count, 1)
@@ -77,9 +75,29 @@ func TestTrue(t *testing.T) {
   {
     var f FakeTester
 
-    truthifier := func() bool { return true }
-
     True(&f, truthifier())
+
+    Equals(t, f.count, 0)
+    Equals(t, f.str, "")
+  }
+}
+
+func falsifier() bool { return false }
+func truthifier() bool { return true }
+
+func TestFalse(t *testing.T) {
+  {
+    var f FakeTester
+    False(&f, truthifier())
+
+    Equals(t, f.count, 1)
+    Equals(t, strings.Contains(f.str, `False(&f, truthifier())`), true)
+    Equals(t, strings.Contains(f.str, "\n"), false)
+  }
+
+  {
+    var f FakeTester
+    False(&f, falsifier())
 
     Equals(t, f.count, 0)
     Equals(t, f.str, "")

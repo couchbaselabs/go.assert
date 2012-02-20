@@ -28,3 +28,13 @@ func True(t TestDriver, got bool) {
     t.Errorf("|||||| %v:%d ----- %s", filename, line, code)
   }
 }
+
+func False(t TestDriver, got bool) {
+  if got != false {
+    _, file, line, _ := runtime.Caller(1)
+    buf, _ := ioutil.ReadFile(file)
+    filename := path.Base(file)
+    code := strings.TrimSpace(strings.Split(string(buf), "\n")[line-1])
+    t.Errorf("|||||| %v:%d ----- %s", filename, line, code)
+  }
+}
