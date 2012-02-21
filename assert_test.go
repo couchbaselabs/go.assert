@@ -138,3 +138,25 @@ func TestNotEqual(t *testing.T) {
     Equals(t, f.str, "")
   }
 }
+
+func TestDeepEqual(t *testing.T) {
+  nums := func() []int { return []int{1, 2, 3} }
+  {
+    var f FakeTester
+    DeepEquals(&f, nums(), []int{1, 2, 4})
+
+    Equals(t, f.count, 1)
+    True(t, strings.Contains(f.str, `146`))
+    True(t, strings.Contains(f.str, `assert_test.go`))
+    True(t, strings.Contains(f.str, `DeepEquals(&f, nums(), []int{1, 2, 4})`))
+    False(t, strings.Contains(f.str, "\n"))
+  }
+
+  {
+    var f FakeTester
+    DeepEquals(&f, nums(), []int{1, 2, 3})
+
+    Equals(t, f.count, 0)
+    Equals(t, f.str, "")
+  }
+}
