@@ -5,6 +5,11 @@ import "io/ioutil"
 import "strings"
 import "path"
 import "reflect"
+//import "shellcolors"
+
+import "text/template"
+import "fmt"
+import "bytes"
 
 type TestDriver interface {
   Errorf(format string, args ...interface{})
@@ -18,10 +23,21 @@ func auxiliaryInfo() (filename string, line int, code string) {
   return
 }
 
+var a = template.Must(template.New("uhh").Parse("{{.Aaah}}"))
+
 func Equals(t TestDriver, got, expected interface{}) {
   if got != expected {
-    filename, line, code := auxiliaryInfo()
-    t.Errorf("###### %v:%d ----- %s ----- expected: %#v ----- got: %#v", filename, line, code, expected, got)
+    //filename, line, code := auxiliaryInfo()
+    var outbuf bytes.Buffer
+    type fooby struct {
+      Aaah int
+    }
+    var b fooby
+    b.Aaah = 233
+    a.Execute(&outbuf, b)
+    fmt.Println(outbuf.String())
+    t.Errorf(outbuf.String())
+    //t.Errorf(col.Red.Fmt("\n%v:%d\n\n%s\n\nexpected: %#v\n     got: %#v", filename, line, code, expected, got))
   }
 }
 

@@ -66,7 +66,7 @@ func TestFaltyAssert(t *testing.T) {
   }
 
   // should contain no newlines
-  if strings.Contains(f.str, "\n") {
+  if strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count") {
     t.Errorf("assert equals error; got [%v]", f)
   }
 }
@@ -81,7 +81,7 @@ func TestTrue(t *testing.T) {
     Equals(t, strings.Contains(f.str, `78`), true)
     Equals(t, strings.Contains(f.str, `assert_test.go`), true)
     Equals(t, strings.Contains(f.str, `True(&f, falsifier())`), true)
-    Equals(t, strings.Contains(f.str, "\n"), false)
+    Equals(t, strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count"), false)
   }
 
   {
@@ -106,7 +106,7 @@ func TestFalse(t *testing.T) {
     Equals(t, strings.Contains(f.str, `103`), true)
     Equals(t, strings.Contains(f.str, `assert_test.go`), true)
     Equals(t, strings.Contains(f.str, `False(&f, truthifier())`), true)
-    Equals(t, strings.Contains(f.str, "\n"), false)
+    Equals(t, strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count"), false)
   }
 
   {
@@ -127,7 +127,7 @@ func TestNotEqual(t *testing.T) {
     True(t, strings.Contains(f.str, `124`))
     True(t, strings.Contains(f.str, `assert_test.go`))
     True(t, strings.Contains(f.str, `NotEquals(&f, Foo(), "foo")`))
-    False(t, strings.Contains(f.str, "\n"))
+    False(t, strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count"))
   }
 
   {
@@ -149,7 +149,7 @@ func TestDeepEqual(t *testing.T) {
     True(t, strings.Contains(f.str, `146`))
     True(t, strings.Contains(f.str, `assert_test.go`))
     True(t, strings.Contains(f.str, `DeepEquals(&f, nums(), []int{1, 2, 4})`))
-    False(t, strings.Contains(f.str, "\n"))
+    False(t, strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count"))
   }
 
   {
@@ -157,6 +157,6 @@ func TestDeepEqual(t *testing.T) {
     DeepEquals(&f, nums(), []int{1, 2, 3})
 
     Equals(t, f.count, 0)
-    Equals(t, f.str, "")
+    Equals(t, f.str, "foo")
   }
 }
