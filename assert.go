@@ -24,6 +24,13 @@ func Equals(t TestDriver, got, expected interface{}) {
   }
 }
 
+func NotEquals(t TestDriver, got, expected interface{}) {
+  if got == expected {
+    filename, line, code := auxiliaryInfo()
+    t.Errorf("|||||| %v:%d ----- %s ----- unexpectedly got: %#v", filename, line, code, got)
+  }
+}
+
 func True(t TestDriver, got bool) {
   if got != true {
     filename, line, code := auxiliaryInfo()

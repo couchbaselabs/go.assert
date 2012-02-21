@@ -14,10 +14,10 @@ func (f *FakeTester) Errorf(format string, args ...interface{}) {
   f.count++
 }
 
+func Foo() string { return "foo" }
+
 func TestValidAssert(t *testing.T) {
   var f FakeTester
-
-  Foo := func() string { return "foo" }
 
   Equals(&f, Foo(), "foo")
 
@@ -34,8 +34,6 @@ func TestValidAssert(t *testing.T) {
 func TestFaltyAssert(t *testing.T) {
   var f FakeTester
 
-  Foo := func() string { return "foo" }
-
   Equals(&f, Foo(), "bar")
 
   if f.count != 1 {
@@ -43,7 +41,7 @@ func TestFaltyAssert(t *testing.T) {
   }
 
   // line
-  if !strings.Contains(f.str, `39`) {
+  if !strings.Contains(f.str, `37`) {
     t.Errorf("assert equals error; got [%v]", f)
   }
 
@@ -80,7 +78,7 @@ func TestTrue(t *testing.T) {
     True(&f, falsifier())
 
     Equals(t, f.count, 1)
-    Equals(t, strings.Contains(f.str, `80`), true)
+    Equals(t, strings.Contains(f.str, `78`), true)
     Equals(t, strings.Contains(f.str, `assert_test.go`), true)
     Equals(t, strings.Contains(f.str, `True(&f, falsifier())`), true)
     Equals(t, strings.Contains(f.str, "\n"), false)
@@ -105,7 +103,7 @@ func TestFalse(t *testing.T) {
     False(&f, truthifier())
 
     Equals(t, f.count, 1)
-    Equals(t, strings.Contains(f.str, `105`), true)
+    Equals(t, strings.Contains(f.str, `103`), true)
     Equals(t, strings.Contains(f.str, `assert_test.go`), true)
     Equals(t, strings.Contains(f.str, `False(&f, truthifier())`), true)
     Equals(t, strings.Contains(f.str, "\n"), false)
@@ -114,6 +112,27 @@ func TestFalse(t *testing.T) {
   {
     var f FakeTester
     False(&f, falsifier())
+
+    Equals(t, f.count, 0)
+    Equals(t, f.str, "")
+  }
+}
+
+func TestNotEqual(t *testing.T) {
+  {
+    var f FakeTester
+    NotEquals(&f, Foo(), "foo")
+
+    Equals(t, f.count, 1)
+    True(t, strings.Contains(f.str, `124`))
+    True(t, strings.Contains(f.str, `assert_test.go`))
+    True(t, strings.Contains(f.str, `NotEquals(&f, Foo(), "foo")`))
+    False(t, strings.Contains(f.str, "\n"))
+  }
+
+  {
+    var f FakeTester
+    NotEquals(&f, Foo(), "bar")
 
     Equals(t, f.count, 0)
     Equals(t, f.str, "")
