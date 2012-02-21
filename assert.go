@@ -21,34 +21,34 @@ func auxiliaryInfo() (filename string, line int, code string) {
 func Equals(t TestDriver, got, expected interface{}) {
   if got != expected {
     filename, line, code := auxiliaryInfo()
-    t.Errorf("|||||| %v:%d ----- %s ----- expected: %#v ----- got: %#v", filename, line, code, expected, got)
+    t.Errorf("###### %v:%d ----- %s ----- expected: %#v ----- got: %#v", filename, line, code, expected, got)
   }
 }
 
 func DeepEquals(t TestDriver, got, expected interface{}) {
   if !reflect.DeepEqual(got, expected) {
     filename, line, code := auxiliaryInfo()
-    t.Errorf("|||||| %v:%d ----- %s ----- expected: %#v ----- got: %#v", filename, line, code, expected, got)
+    t.Errorf("###### %v:%d ----- %s ----- expected: %#v ----- got: %#v", filename, line, code, expected, got)
   }
 }
 
 func NotEquals(t TestDriver, got, expected interface{}) {
   if got == expected {
     filename, line, code := auxiliaryInfo()
-    t.Errorf("|||||| %v:%d ----- %s ----- unexpectedly got: %#v", filename, line, code, got)
+    t.Errorf("###### %v:%d ----- %s ----- unexpectedly got: %#v", filename, line, code, got)
   }
 }
 
 func True(t TestDriver, got bool) {
   if got != true {
     filename, line, code := auxiliaryInfo()
-    t.Errorf("|||||| %v:%d ----- %s", filename, line, code)
+    t.Errorf("###### %v:%d ----- %s", filename, line, code)
   }
 }
 
 func False(t TestDriver, got bool) {
   if got != false {
     filename, line, code := auxiliaryInfo()
-    t.Errorf("|||||| %v:%d ----- %s", filename, line, code)
+    t.Errorf("###### %v:%d ----- %s", filename, line, code)
   }
 }
