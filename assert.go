@@ -5,10 +5,10 @@ import "io/ioutil"
 import "strings"
 import "path"
 import "reflect"
-//import "shellcolors"
+import "shellcolors"
 
 import "text/template"
-import "fmt"
+//import "fmt"
 import "bytes"
 
 type TestDriver interface {
@@ -23,21 +23,38 @@ func auxiliaryInfo() (filename string, line int, code string) {
   return
 }
 
-var a = template.Must(template.New("uhh").Parse("{{.Aaah}}"))
+var aa = template.New("precursor").Funcs(template.FuncMap{
+  "red": func(a string) string { return col.Red.Fmt(a) },
+})
+
+type fooby struct {
+  File string
+  Line int
+  Code string
+  Expected interface{}
+  Got interface{}
+}
 
 func Equals(t TestDriver, got, expected interface{}) {
   if got != expected {
-    //filename, line, code := auxiliaryInfo()
-    var outbuf bytes.Buffer
-    type fooby struct {
-      Aaah int
+    filename, line, code := auxiliaryInfo()
+
+    b := fooby{
+      File: filename,
+      Line: line,
+      Code: code,
+      Got: got,
+      Expected: expected,
     }
-    var b fooby
-    b.Aaah = 233
+    var outbuf bytes.Buffer
+
+    a, _ := aa.Parse(`{{ printf "%s:%d" .File .Line | red }} {{.Code}} expected: {{.Expected | printf "%q"}} got: {{.Got | printf "%q"}}`)
     a.Execute(&outbuf, b)
-    fmt.Println(outbuf.String())
-    t.Errorf(outbuf.String())
-    //t.Errorf(col.Red.Fmt("\n%v:%d\n\n%s\n\nexpected: %#v\n     got: %#v", filename, line, code, expected, got))
+
+    str := outbuf.String()
+    //str := col.Red.Fmt("\n%v:%d\n\n%s\n\nexpected: %#v\n     got: %#v", filename, line, code, expected, got)
+
+    t.Errorf(str)
   }
 }
 
