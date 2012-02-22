@@ -7,20 +7,8 @@ import "path"
 import "reflect"
 import "shellcolors"
 
-import "text/template"
-//import "fmt"
-import "bytes"
-
 type TestDriver interface {
   Errorf(format string, args ...interface{})
-}
-
-type failedTestData struct {
-  File string
-  Line int
-  Code string
-  Expected interface{}
-  Got interface{}
 }
 
 func auxiliaryInfo() (filename string, line int, code string) {
@@ -31,30 +19,10 @@ func auxiliaryInfo() (filename string, line int, code string) {
   return
 }
 
-var aa = template.New("precursor").Funcs(template.FuncMap{
-  "red": func(a string) string { return col.Red.Fmt(a) },
-})
-
 func Equals(t TestDriver, got, expected interface{}) {
   if got != expected {
     filename, line, code := auxiliaryInfo()
-
-    b := failedTestData{
-      File: filename,
-      Line: line,
-      Code: code,
-      Got: got,
-      Expected: expected,
-    }
-    var outbuf bytes.Buffer
-
-    aa.Parse("{{ .File | red }} {{ printf \"%s:%d\" .File .Line | red }} {{.Code}} expected: {{.Expected | printf \"%q\"}} got: {{.Got | printf \"%q\"}}")
-    aa.Execute(&outbuf, b)
-
-    str := outbuf.String()
-    //str := col.Red.Fmt("\n%v:%d\n\n%s\n\nexpected: %#v\n     got: %#v", filename, line, code, expected, got)
-
-    t.Errorf(str)
+    t.Errorf(col.Red.Fmt("\n%v:%d\n\n%s\n\nexpected: %#v\n     got: %#v", filename, line, code, expected, got))
   }
 }
 
