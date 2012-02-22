@@ -157,6 +157,16 @@ func TestDeepEqual(t *testing.T) {
     DeepEquals(&f, nums(), []int{1, 2, 3})
 
     Equals(t, f.count, 0)
-    Equals(t, f.str, "foo")
+    Equals(t, f.str, "")
   }
+}
+
+func TestShowOff(t *testing.T) {
+  return
+
+  Equals(t, "foo", "bar")
+  NotEquals(t, "foo", "foo")
+  DeepEquals(t, "foo", "bar")
+  True(t, "foo" == "bar")
+  False(t, "foo" == "foo")
 }
