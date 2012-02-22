@@ -15,6 +15,14 @@ type TestDriver interface {
   Errorf(format string, args ...interface{})
 }
 
+type failedTestData struct {
+  File string
+  Line int
+  Code string
+  Expected interface{}
+  Got interface{}
+}
+
 func auxiliaryInfo() (filename string, line int, code string) {
   _, file, line, _ := runtime.Caller(2)
   buf, _ := ioutil.ReadFile(file)
@@ -27,19 +35,11 @@ var aa = template.New("precursor").Funcs(template.FuncMap{
   "red": func(a string) string { return col.Red.Fmt(a) },
 })
 
-type fooby struct {
-  File string
-  Line int
-  Code string
-  Expected interface{}
-  Got interface{}
-}
-
 func Equals(t TestDriver, got, expected interface{}) {
   if got != expected {
     filename, line, code := auxiliaryInfo()
 
-    b := fooby{
+    b := failedTestData{
       File: filename,
       Line: line,
       Code: code,
@@ -48,8 +48,8 @@ func Equals(t TestDriver, got, expected interface{}) {
     }
     var outbuf bytes.Buffer
 
-    a, _ := aa.Parse(`{{ printf "%s:%d" .File .Line | red }} {{.Code}} expected: {{.Expected | printf "%q"}} got: {{.Got | printf "%q"}}`)
-    a.Execute(&outbuf, b)
+    aa.Parse("{{ .File | red }} {{ printf \"%s:%d\" .File .Line | red }} {{.Code}} expected: {{.Expected | printf \"%q\"}} got: {{.Got | printf \"%q\"}}")
+    aa.Execute(&outbuf, b)
 
     str := outbuf.String()
     //str := col.Red.Fmt("\n%v:%d\n\n%s\n\nexpected: %#v\n     got: %#v", filename, line, code, expected, got)
