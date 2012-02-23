@@ -150,11 +150,68 @@ func TestDeepEqual(t *testing.T) {
     True(t, strings.Contains(f.str, `assert_test.go`))
     True(t, strings.Contains(f.str, `DeepEquals(&f, nums(), []int{1, 2, 4})`))
     False(t, strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count"))
+
+    True(t, strings.Contains(f.str, fmt.Sprintf(`expected: %#v`, []int{1, 2, 4})))
+    True(t, strings.Contains(f.str, fmt.Sprintf(`got: %#v`, []int{1, 2, 3})))
   }
 
   {
     var f FakeTester
     DeepEquals(&f, nums(), []int{1, 2, 3})
+
+    Equals(t, f.count, 0)
+    Equals(t, f.str, "")
+  }
+}
+
+func customEqualsForTesting(t TestDriver, got, expected string) {
+  if got != expected {
+    Errorf(t, "expected: %#v\n     got: %#v", expected, got)
+  }
+}
+
+func TestErrorf(t *testing.T) {
+  {
+    var f FakeTester
+    customEqualsForTesting(&f, Foo(), "bar")
+
+    Equals(t, f.count, 1)
+    True(t, strings.Contains(f.str, `176`))
+    True(t, strings.Contains(f.str, `assert_test.go`))
+    True(t, strings.Contains(f.str, `customEqualsForTesting(&f, Foo(), "bar")`))
+    False(t, strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count"))
+
+    True(t, strings.Contains(f.str, `expected: "bar"`))
+    True(t, strings.Contains(f.str, `got: "foo"`))
+  }
+
+  {
+    var f FakeTester
+    customEqualsForTesting(&f, Foo(), "foo")
+
+    Equals(t, f.count, 0)
+    Equals(t, f.str, "")
+  }
+}
+
+func TestStringContains(t *testing.T) {
+  {
+    var f FakeTester
+    StringContains(&f, "foo", "hi")
+
+    Equals(t, f.count, 1)
+    True(t, strings.Contains(f.str, `200`))
+    True(t, strings.Contains(f.str, `assert_test.go`))
+    True(t, strings.Contains(f.str, `StringContains(&f, "foo", "hi")`))
+    False(t, strings.Contains(f.str, "FakeTester") || strings.Contains(f.str, "f.count"))
+
+    True(t, strings.Contains(f.str, `expected: "foo"`))
+    True(t, strings.Contains(f.str, `to contain: "hi"`))
+  }
+
+  {
+    var f FakeTester
+    StringContains(&f, "foo", "oo")
 
     Equals(t, f.count, 0)
     Equals(t, f.str, "")
@@ -169,4 +226,6 @@ func TestShowOff(t *testing.T) {
   DeepEquals(t, "foo", "bar")
   True(t, "foo" == "bar")
   False(t, "foo" == "foo")
+  customEqualsForTesting(t, "1", "2")
+  StringContains(t, "flub", "ber")
 }
