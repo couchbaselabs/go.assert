@@ -5,7 +5,8 @@ import "io/ioutil"
 import "strings"
 import "path"
 import "reflect"
-import "shellcolors"
+
+import "github.com/sdegutis/shellcolors"
 
 type TestDriver interface {
   Errorf(format string, args ...interface{})
