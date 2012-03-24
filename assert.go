@@ -6,7 +6,7 @@ import "strings"
 import "path"
 import "reflect"
 
-import "github.com/sdegutis/shellcolors"
+import "github.com/sdegutis/go.shellcolors-old"
 
 type TestDriver interface {
   Errorf(format string, args ...interface{})
