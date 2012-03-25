@@ -6,7 +6,10 @@ import "strings"
 import "path"
 import "reflect"
 
-import "github.com/sdegutis/go.shellcolors-old"
+import "bytes"
+import "fmt"
+
+import "github.com/sdegutis/go.shattr"
 
 type TestDriver interface {
   Errorf(format string, args ...interface{})
@@ -20,44 +23,49 @@ func auxiliaryInfo(extraStacks int) (filename string, line int, code string) {
   return
 }
 
-func codeErrorString(extraStacks int) string {
+func printError(t TestDriver, extraStacks int, format string, args ...interface{}) {
   filename, line, code := auxiliaryInfo(extraStacks)
-  return col.Red.Fmt("\n%v:%d\n%s", filename, line, code)
+
+  var buf bytes.Buffer
+  fmt.Fprintf(shattr.NewWriter(&buf, shattr.Red), "\n%v:%d\n%s", filename, line, code)
+  fmt.Fprintf(shattr.NewWriter(&buf, shattr.Purple), format, args...)
+
+  t.Errorf(buf.String())
 }
 
 func Equals(t TestDriver, got, expected interface{}) {
   if got != expected {
-    t.Errorf(codeErrorString(0) + col.Purple.Fmt("\n\n\texpected: %#v\n\t     got: %#v", expected, got))
+    printError(t, 0, "\n\n\texpected: %#v\n\t     got: %#v", expected, got)
   }
 }
 
 func DeepEquals(t TestDriver, got, expected interface{}) {
   if !reflect.DeepEqual(got, expected) {
-    t.Errorf(codeErrorString(0) + col.Purple.Fmt("\n\n\texpected: %#v\n\t     got: %#v", expected, got))
+    printError(t, 0, "\n\n\texpected: %#v\n\t     got: %#v", expected, got)
   }
 }
 
 func NotEquals(t TestDriver, got, expected interface{}) {
   if got == expected {
-    t.Errorf(codeErrorString(0) + col.Purple.Fmt("\n\n\tunexpectedly got: %#v", got))
+    printError(t, 0, "\n\n\tunexpectedly got: %#v", got)
   }
 }
 
 func True(t TestDriver, got bool) {
   if got != true {
-    t.Errorf(codeErrorString(0))
+    printError(t, 0, "")
   }
 }
 
 func False(t TestDriver, got bool) {
   if got != false {
-    t.Errorf(codeErrorString(0))
+    printError(t, 0, "")
   }
 }
 
 func Errorf(t TestDriver, format string, args ...interface{}) {
   format = "\t" + strings.Replace(format, "\n", "\n\t", -1) // indent every line once
-  t.Errorf(codeErrorString(1) + "\n\n" + col.Purple.Fmt(format, args...))
+  printError(t, 1, "\n\n" + format, args...)
 }
 
 func StringContains(t TestDriver, full, fragment string) {
