@@ -28,7 +28,7 @@ func printError(t TestDriver, extraStacks int, format string, args ...interface{
 	fmt.Printf("\n\t%v:%d\n\t%s", filename, line, code)
 	fmt.Printf("\t"+format+"\n", args...)
 
-	t.Errorf(buf.String())
+	t.Fatalf(buf.String())
 }
 
 func Equals(t TestDriver, got, expected interface{}) {
