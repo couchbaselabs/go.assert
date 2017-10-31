@@ -11,6 +11,7 @@ import "fmt"
 
 type TestDriver interface {
 	Errorf(format string, args ...interface{})
+	Fatalf(format string, args ...interface{})
 }
 
 func auxiliaryInfo(extraStacks int) (filename string, line int, code string) {
